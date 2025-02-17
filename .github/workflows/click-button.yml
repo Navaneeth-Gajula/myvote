@@ -1,0 +1,25 @@
+name: Click Button Every 31 Minutes
+
+on:
+  schedule:
+    - cron: "*/31 * * * *"  # Runs every 31 minutes
+
+jobs:
+  click_button:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install selenium
+          sudo apt-get install -y chromium-chromedriver
+
+      - name: Run Selenium script
+        run: python click_button.py
