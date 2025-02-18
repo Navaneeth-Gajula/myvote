@@ -1,44 +1,39 @@
-name: Setup Selenium Environment
+name: Click Button Automation
 
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: "*/31 * * * *"  # Runs every 31 minutes
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  setup:
+  click_button:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install dependencies
+    - name: Setup Selenium
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip
-
-    - name: Install Google Chrome
-      run: |
+        sudo apt-get install -y wget unzip curl jq
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt-get install -f
-
-    - name: Get Chrome version
-      run: |
-        chrome_version=$(google-chrome-stable --version | awk '{print $3}' | cut -d'.' -f1,2)
-        echo "Chrome version: $chrome_version"
-
-    - name: Download ChromeDriver
-      run: |
-        wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${chrome_version})/chromedriver_linux64.zip
-
-    - name: Install ChromeDriver
-      run: |
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
+        chrome_version=$(google-chrome-stable --version | awk '{print $3}')
+        chrome_major_version=$(echo $chrome_version | cut -d'.' -f1)
+        latest_chromedriver=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${chrome_major_version}")
+        wget "https://chromedriver.storage.googleapis.com/${latest_chromedriver}/chromedriver_linux64.zip"
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
 
-    - name: Verify Installation
+    - name: Install Python Dependencies
       run: |
-        chromedriver --version
-        google-chrome-stable --version
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install selenium
+
+    - name: Run Click Button Script
+      run: |
+        source venv/bin/activate
+        python click_button.py
