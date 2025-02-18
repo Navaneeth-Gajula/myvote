@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 name: Auto Vote
 
 on:
   schedule:
     - cron: '*/2 * * * *'  # Runs every 31 minutes
+=======
+name: Click Button Automation
+
+on:
+  schedule:
+    - cron: "*/31 * * * *"  # Runs every 31 minutes
+>>>>>>> 10655fed796537222c6a5eae091654065a958605
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -10,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+<<<<<<< HEAD
       - name: Checkout repository
         uses: actions/checkout@v2
 
@@ -31,3 +40,32 @@ jobs:
       - name: Run the vote script
         run: |
           python click_button.py
+=======
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Selenium
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip curl jq
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
+        chrome_version=$(google-chrome-stable --version | awk '{print $3}')
+        chrome_major_version=$(echo $chrome_version | cut -d'.' -f1)
+        latest_chromedriver=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${chrome_major_version}")
+        wget "https://chromedriver.storage.googleapis.com/${latest_chromedriver}/chromedriver_linux64.zip"
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+        sudo chmod +x /usr/local/bin/chromedriver
+
+    - name: Install Python Dependencies
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install selenium
+
+    - name: Run Click Button Script
+      run: |
+        source venv/bin/activate
+        python click_button.py
+>>>>>>> 10655fed796537222c6a5eae091654065a958605
