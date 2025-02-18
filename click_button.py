@@ -1,27 +1,15 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import time
 
-<<<<<<< HEAD
 # Set up the WebDriver (e.g., Chrome)
 options = webdriver.ChromeOptions()
 options.add_argument('--headless')  # Run in headless mode
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
-=======
-# Setup Chrome WebDriver
-service = Service("/usr/local/bin/chromedriver")  # Path to ChromeDriver
-options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Run without UI (for GitHub Actions)
-options.add_argument("--no-sandbox")
-options.add_argument("--disable-dev-shm-usage")
->>>>>>> 10655fed796537222c6a5eae091654065a958605
 
-# Start WebDriver
-driver = webdriver.Chrome(service=service, options=options)
+driver = webdriver.Chrome(options=options)
 
 try:
     # Open the website
