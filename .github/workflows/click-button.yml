@@ -3,23 +3,31 @@ name: Click Button Every 31 Minutes
 on:
   schedule:
     - cron: "*/31 * * * *"  # Runs every 31 minutes
+  push:  # This allows the workflow to run when you push a commit
 
 jobs:
   click_button:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
-      - name: Install dependencies
+      - name: Install Chrome and ChromeDriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+          sudo apt-get install -y chromium-chromedriver
+          echo "Chrome installed!"
+
+      - name: Install Python dependencies
         run: |
           pip install selenium
-          sudo apt-get install -y chromium-chromedriver
 
-      - name: Run Selenium script
+      - name: Run Python script
         run: python click_button.py
