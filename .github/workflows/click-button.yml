@@ -1,39 +1,44 @@
-name: Click Button Every 31 Minutes
+name: Setup Selenium Environment
 
 on:
-  schedule:
-    - cron: "*/31 * * * *"  # Runs every 31 minutes
-  push:  # Allows workflow to run when you push a commit
+  push:
+    branches:
+      - main
 
 jobs:
-  click_button:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y wget unzip
 
-      - name: Install Chrome and ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get -fy install
-          CHROME_VERSION=$(google-chrome --version | cut -d ' ' -f 3 | cut -d '.' -f 1)
-          wget https://chromedriver.storage.googleapis.com/$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          chmod +x /usr/local/bin/chromedriver
-          echo "Chrome and ChromeDriver installed!"
+    - name: Install Google Chrome
+      run: |
+        wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+        sudo dpkg -i google-chrome-stable_current_amd64.deb
+        sudo apt-get install -f
 
-      - name: Install Python dependencies
-        run: |
-          pip install selenium
+    - name: Get Chrome version
+      run: |
+        chrome_version=$(google-chrome-stable --version | awk '{print $3}' | cut -d'.' -f1,2)
+        echo "Chrome version: $chrome_version"
 
-      - name: Run Python script
-        run: python click_button.py
+    - name: Download ChromeDriver
+      run: |
+        wget https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${chrome_version})/chromedriver_linux64.zip
+
+    - name: Install ChromeDriver
+      run: |
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+
+    - name: Verify Installation
+      run: |
+        chromedriver --version
+        google-chrome-stable --version
