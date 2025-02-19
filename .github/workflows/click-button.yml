@@ -45,7 +45,7 @@ jobs:
           sudo unzip /tmp/chromedriver.zip -d /tmp/
           sudo mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/
           sudo chmod +x /usr/local/bin/chromedriver
-          rm -rf /tmp/chromedriver-linux64 /tmp/chromedriver.zip
+          sudo rm -rf /tmp/chromedriver-linux64 /tmp/chromedriver.zip
 
           # Verify ChromeDriver installation
           chromedriver --version
