@@ -2,7 +2,7 @@ name: Auto Vote
 
 on:
   schedule:
-    - cron: '*/31 * * * *'  # Runs every 31 minutes
+    - cron: '*/3 * * * *'  # Runs every 31 minutes
   workflow_dispatch:  # Allows manual triggering
 
 jobs:
@@ -32,9 +32,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-          # Get Chrome version
-          CHROME_VERSION=$(google-chrome --version | awk '{print $3}')
-          echo "Chrome version: $CHROME_VERSION"
+          # Get Chrome version (major and minor only, e.g., 133.0.6943)
+          CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d'.' -f1-3)
+          echo "Chrome version (major.minor.patch): $CHROME_VERSION"
 
           # Get matching ChromeDriver version
           CHROMEDRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
