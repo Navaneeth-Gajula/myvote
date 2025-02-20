@@ -18,8 +18,8 @@ try:
     # Wait for the page to load
     time.sleep(10)
 
-    # print all text from website
-    print(driver.page_source)
+    # print all text from website not page source
+    print(driver.find_element(By.TAG_NAME, 'body').text)
 
     vote_form = driver.find_element(By.ID, "votefrm_sec")
     print(vote_form.text)
