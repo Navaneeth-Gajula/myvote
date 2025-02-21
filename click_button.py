@@ -13,7 +13,7 @@ driver = webdriver.Chrome(options=options)
 
 try:
     # Open the website
-    driver.get('https://mycutebaby.in/contest/participant/679e77f65b140')
+    driver.get('https://mycutebaby.in/contest/participant/67a815432c8ae')
 
     # Wait for the page to load
     time.sleep(10)
