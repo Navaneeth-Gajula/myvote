@@ -2,14 +2,48 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
 
-# Set up the WebDriver (e.g., Chrome)
+
+# Set up Chrome options
 options = webdriver.ChromeOptions()
-options.add_argument('--headless')  # Run in headless mode
+# Remove the --headless flag
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
 
+# Set the User-Agent to mimic a mobile device (e.g., Chrome on Android)
+mobile_user_agent = (
+    "Mozilla/5.0 (Linux; Android 10; Pixel 3) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/133.0.0.0 Mobile Safari/537.36"
+)
+options.add_argument(f'user-agent={mobile_user_agent}')
+
+# Set mobile emulation options
+mobile_emulation = {
+    "deviceMetrics": {"width": 360, "height": 640, "pixelRatio": 3.0},
+    "userAgent": mobile_user_agent,
+}
+options.add_experimental_option("mobileEmulation", mobile_emulation)
+
+# Disable automation flags
+options.add_experimental_option("excludeSwitches", ["enable-automation"])
+options.add_experimental_option("useAutomationExtension", False)
+
+# Add additional options to make the browser appear more like a real browser
+options.add_argument('--disable-blink-features=AutomationControlled')
+options.add_argument('--disable-infobars')
+options.add_argument('--disable-extensions')
+options.add_argument('--disable-popup-blocking')
+options.add_argument('--disable-notifications')
+
+
 driver = webdriver.Chrome(options=options)
+driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+    'source': '''
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+        })
+    '''
+})
 
 try:
     # Open the website
@@ -40,3 +74,10 @@ except Exception as e:
 finally:
     # Close the browser
     driver.quit()
+
+
+
+
+
+
+
