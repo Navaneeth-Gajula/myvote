@@ -1,7 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
-
+import os
+import uuid
 
 # Set up Chrome options
 options = webdriver.ChromeOptions()
@@ -9,6 +10,10 @@ options = webdriver.ChromeOptions()
 options.add_argument('--disable-gpu')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shm-usage')
+
+# Specify a unique user data directory
+user_data_dir = f"/tmp/chrome-user-data-{uuid.uuid4()}"
+options.add_argument(f'--user-data-dir={user_data_dir}')
 
 # Set the User-Agent to mimic a mobile device (e.g., Chrome on Android)
 mobile_user_agent = (
@@ -35,8 +40,10 @@ options.add_argument('--disable-extensions')
 options.add_argument('--disable-popup-blocking')
 options.add_argument('--disable-notifications')
 
-
+# Initialize WebDriver
 driver = webdriver.Chrome(options=options)
+
+# Modify navigator.webdriver property to prevent detection
 driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
     'source': '''
         Object.defineProperty(navigator, 'webdriver', {
@@ -52,9 +59,10 @@ try:
     # Wait for the page to load
     time.sleep(10)
 
-    # print all text from website not page source
+    # Print all text from the website (not page source)
     print(driver.find_element(By.TAG_NAME, 'body').text)
 
+    # Find the vote form and print its text
     vote_form = driver.find_element(By.ID, "votefrm_sec")
     print(vote_form.text)
 
@@ -63,7 +71,8 @@ try:
     vote_button.click()
 
     print("Vote button clicked successfully!")
-    # after clicking the button wait for 4 seconfs and extract all the content from id votefrm_sec
+
+    # After clicking the button, wait for 4 seconds and extract all the content from id votefrm_sec
     time.sleep(4)
     vote_form = driver.find_element(By.ID, "votefrm_sec")
     print(vote_form.text)
@@ -75,9 +84,6 @@ finally:
     # Close the browser
     driver.quit()
 
-
-
-
-
-
-
+    # Clean up the user data directory
+    if os.path.exists(user_data_dir):
+        os.system(f"rm -rf {user_data_dir}")
