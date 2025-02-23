@@ -80,6 +80,7 @@ try:
 
 except Exception as e:
     print(f"An error occurred: {e}")
+    print(driver.page_source)
 
 finally:
     # Close the browser
