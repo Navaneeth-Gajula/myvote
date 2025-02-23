@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 import time
 import os
 import uuid
@@ -67,9 +68,15 @@ try:
     vote_form = driver.find_element(By.ID, "votefrm_sec")
     print(vote_form.text)
 
-    # Find the button by its ID and click it
+    # Find the button by its ID
     vote_button = driver.find_element(By.ID, 'vote_btn')
-    vote_button.click()
+
+    # Scroll the button into view
+    driver.execute_script("arguments[0].scrollIntoView(true);", vote_button)
+    time.sleep(2)  # Wait for scrolling to complete
+
+    # Use JavaScript to click the button (to bypass overlapping elements)
+    driver.execute_script("arguments[0].click();", vote_button)
 
     print("Vote button clicked successfully!")
 
@@ -80,7 +87,7 @@ try:
 
 except Exception as e:
     print(f"An error occurred: {e}")
-    print(driver.page_source)
+    print(driver.page_source)  # Print the page source for debugging
 
 finally:
     # Close the browser
